@@ -13,7 +13,7 @@ import time
 
 DOCUMENTATION = '''
 ---
-module: aemservice
+module: aem_service
 short_description: Manage AEM Instances
 description:
     - Start and stop AEM instances
@@ -75,14 +75,14 @@ options:
 
 EXAMPLES='''
 # Start AEM
-- aemservice: state=started
+- aem_service: state=started
              uri='/libs/granite/core/content/login.html'
              pattern='<title>AEM Sign In</title>'
              host=auth01
              port=4502
 
 # Stop AEM
-- aemservice: state=stopped
+- aem_service: state=stopped
              host=auth01
              port=4502
 '''

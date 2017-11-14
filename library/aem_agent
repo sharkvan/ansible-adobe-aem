@@ -13,7 +13,7 @@ import HTMLParser
 
 DOCUMENTATION = '''
 ---
-module: aemagent
+module: aem_agent
 short_description: Manage AEM agents
 description:
     - Manage AEM replication and flush agents.
@@ -147,7 +147,7 @@ options:
 
 EXAMPLES='''
 # Create agent
-- aemagent: name=repl_publish
+- aem_agent: name=repl_publish
            state=present
            title='replication agent for publish instance'
            folder='agent.author'

@@ -13,7 +13,7 @@ import HTMLParser
 
 DOCUMENTATION = '''
 ---
-module: aembundle
+module: aem_bundle
 short_description: Manage AEM Bundles
 description:
     - Enable and disable AEM bundles
@@ -49,7 +49,7 @@ options:
 
 EXAMPLES='''
 # Enable AEM bundle
-- aembundle: name=com.day.crx.crxde-support
+- aem_bundle: name=com.day.crx.crxde-support
             state=enabled
             admin_user=admin
             admin_password=admin
@@ -57,7 +57,7 @@ EXAMPLES='''
             port=4502
 
 # Disable AEM bundle
-- aembundle: name=com.day.crx.crxde-support
+- aem_bundle: name=com.day.crx.crxde-support
             state=disabled
             admin_user=admin
             admin_password=admin

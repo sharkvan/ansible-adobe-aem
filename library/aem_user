@@ -14,7 +14,7 @@ import re
 
 DOCUMENTATION = '''
 ---
-module: aemuser
+module: aem_user
 short_description: Manage AEM users
 description:
     - Create, modify and delete AEM users
@@ -73,7 +73,7 @@ options:
 
 EXAMPLES='''
 # Create a user
-- aemuser: id=bbaggins
+- aem_user: id=bbaggins
           first_name=Bilbo
           last_name=Baggins
           password=myprecious
@@ -85,7 +85,7 @@ EXAMPLES='''
           state=present
 
 # Delete a user
-- aemuser: id=gollum
+- aem_user: id=gollum
           host=auth01
           port=4502
           admin_user=admin

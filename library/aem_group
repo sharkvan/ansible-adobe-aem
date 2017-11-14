@@ -10,7 +10,7 @@ import json
 
 DOCUMENTATION = '''
 ---
-module: aemgroup
+module: aem_group
 short_description: Manage AEM groups
 description:
     - Create, modify and delete AEM groups
@@ -60,7 +60,7 @@ options:
 
 EXAMPLES='''
 # Create a group
-- aemgroup: id=sysadmin
+- aem_group: id=sysadmin
            name='Systems Administrators'
            groups='administrators'
            host=auth01
@@ -70,7 +70,7 @@ EXAMPLES='''
            state=present
 
 # Delete a group
-- aemgroup: id=devs
+- aem_group: id=devs
            host=auth01
            port=4502
            admin_user=admin

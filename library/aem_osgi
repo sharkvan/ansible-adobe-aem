@@ -12,10 +12,10 @@ import yaml
 
 DOCUMENTATION = '''
 ---
-module: cqosgi
-short_description: Manage Adobe CQ osgi settings
+module: aem_osgi
+short_description: Manage Adobe Extperience Manager osgi settings
 description:
-    - Create, modify (and delete when implemented) CQ osgi settings
+    - Create, modify (and delete when implemented) AEM osgi settings
       This module requires pyyaml module to be installed on machine
       running it (this is machine when you run ansible when used as
       local action or target, managed machine when used as regular
@@ -76,7 +76,7 @@ options:
 EXAMPLES='''
 # Set/modify a string type setting. Use true or false as value
 # to set boolean properties.
-  cqosgi: id=com.some.osgi.id
+  aem_osgi: id=com.some.osgi.id
     property=some.string.type.property
     value="somevalue"
     osgimode=string
@@ -87,7 +87,7 @@ EXAMPLES='''
     port=some_listen_port
 
 # Create factory type setting
-  cqosgi: id=com.some.osgi.factory.id
+  aem_osgi: id=com.some.osgi.factory.id
     property=factory
     value="{ prop1: value1, prop2: value2, prop3: value3 }"
     osgimode=factory
@@ -99,7 +99,7 @@ EXAMPLES='''
 
 # Set/modify an array type setting - contents of the property will
 # be overwritten by array provided in value
-  cqosgi: id=com.some.osgi.id
+  aem_osgi: id=com.some.osgi.id
     property=some.array.type.property
     value="[ value1, value2 ]"
     osgimode=array
@@ -112,7 +112,7 @@ EXAMPLES='''
 # Set/modify an array type setting - contents of the property will
 # be appended to  array provided in value, idempotently (only once,
 # no repeat appending will take place)
-  cqosgi: id=com.some.osgi.id
+  aem_osgi: id=com.some.osgi.id
     property=some.arraytoappendto.type.property
     value="[ value1, value2 ]"
     osgimode=arrayappend

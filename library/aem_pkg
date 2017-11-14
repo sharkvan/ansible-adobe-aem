@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 
 DOCUMENTATION = '''
 ---
-module: aempkg
+module: aem_package
 short_description: Manage Adobe CQ Packages
 description:
     - Upload, install, uninstall and delete CQ packages
@@ -82,7 +82,7 @@ options:
 
 EXAMPLES='''
 # Upload and install package where the file name and package name are the same
-- aempkg: name=cq-5.6.1-hotfix-3707-1.0.0.zip
+- aem_package: name=cq-5.6.1-hotfix-3707-1.0.0.zip
          path=/var/packages
          state=present
          admin_user=admin
@@ -91,7 +91,7 @@ EXAMPLES='''
          port=4502
 
 # Upload and install a package where the file name and package name are different
-- aempkg: name=acs-aem-commons-content-1.6.2.zip
+- aem_package: name=acs-aem-commons-content-1.6.2.zip
          path=/var/package/acs-aem-commons-content-1.6.2-min.zip
          state=present
          admin_user=admin
