@@ -159,7 +159,7 @@ class AEMPkg(object):
                     now = time.time()
                     if now - start_time > self.timeout:
                         self.module.fail_json(msg="get_pkg_info: timed out trying to get package info")
-                    time.sleep(30)
+                    time.sleep(1)
                     continue
                 else:
                     self.module.fail_json(msg="get_pkg_info: http request '%s %s' failed: %s %s" % (method, url, status, output))
@@ -229,14 +229,23 @@ class AEMPkg(object):
             if not os.path.isfile(file):
                 self.module.fail_json(msg="upload_pkg: File '%s' doesn't exist" % file)
             if not self.module.check_mode:
-                cmd="%s -u %s:%s -v -q -F package='@%s' http://%s:%s/crx/packmgr/service/.json/?cmd=upload" % (self.curl_cmd, self.admin_user, self.admin_password, file, self.host, self.port)
+                cmd="%s -u %s:%s -v -q -F package='@%s' %s http://%s:%s/crx/packmgr/service/.json/?cmd=upload" % (
+                    self.curl_cmd, 
+                    self.admin_user, 
+                    self.admin_password, 
+                    file, 
+                    ("-F force=true" if self.force == 'yes' else ''),
+                    self.host, 
+                    self.port
+                )
+                
                 (rc, out, err) = self.module.run_command(cmd)
                 now = time.time()
                 if rc != 0:
                     if now - start_time > self.timeout:
                         self.module.fail_json(msg='upload_pkg: Package upload failed: rc=%s stdout=%s stderr=%s' % (rc, out, err))
                     else:
-                         time.sleep(30)
+                         time.sleep(1)
                          continue
 
                 self.get_pkg_info(wait=True)
@@ -244,7 +253,7 @@ class AEMPkg(object):
                     if now - start_time > self.timeout:
                         self.module.fail_json(msg="upload_pkg: Error: can't find package '%s' after upload. %s - %s" % (self.name, out, err))
                     else:
-                        time.sleep(30)
+                        time.sleep(1)
                         continue
             break
 
@@ -265,7 +274,7 @@ class AEMPkg(object):
                     if now - start_time > self.timeout:
                         self.module.fail_json(msg="install_pkg: http request '%s %s' failed: %s %s" % ('POST', url, status, output))
                     else:
-                        time.sleep(30)
+                        time.sleep(1)
                         continue
                 try:
                     data = json.loads(output)
@@ -274,14 +283,14 @@ class AEMPkg(object):
                     if now - start_time > self.timeout:
                         self.module.fail_json(msg='install_pkg: failed to decode JSON: %s %s' % (e, output))
                     else:
-                        time.sleep(30)
+                        time.sleep(1)
                         continue
                 if not data['success']:
                     now = time.time()
                     if now - start_time > self.timeout:
                         self.module.fail_json(msg='install_pkg: Package install failed: %s - %s' % (url, data['msg']))
                     else:
-                        time.sleep(30)
+                        time.sleep(1)
                         continue
                 self.wait_for_completion()
                 break
@@ -336,7 +345,7 @@ class AEMPkg(object):
                 break
             if (time.time() - start_time) > self.timeout:
                 self.module.fail_json(msg='Timed out waiting for package install')
-            time.sleep(30)
+            time.sleep(1)
 
     # --------------------------------------------------------------------------------
     # Issue http request.

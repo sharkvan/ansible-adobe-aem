@@ -44,6 +44,10 @@ options:
             - The command used to start or stop AEM.
         required: false
         default: service adobecq start, service adobecq stop
+    pid_file_path:
+        description:
+            - A path to a pid file to help determine when the process has terminated
+        required: false
     host:
         description:
             - Host name where AEM is running
@@ -104,6 +108,7 @@ class AEMService(object):
         self.timeout        = self.module.params['timeout']
         self.verbose        = self.module.params['verbose']
         self.authenticate   = self.module.params['authenticate']
+        self.pid_file_path  = self.module.params['pid_file_path']
         
         self.changed = False
         self.msg = []
@@ -115,17 +120,39 @@ class AEMService(object):
     # so use this to determine if the process is running, even if it's not fully up yet.
     # --------------------------------------------------------------------------------
     def get_process_state(self):
+        self.msg.append('## get_process_state ##')
+        result = False
         s = socket.socket()
-        result = s.connect_ex((self.host, int(self.port)))
+        socket_result = s.connect_ex((self.host, int(self.port)))
         s.close()
-        if result == 0:
+    
+        if socket_result == 0:
             if self.verbose:
                 self.msg.append('port is open')
-            return True
+            result = True
         else:
             if self.verbose:
                 self.msg.append('port is closed')
-            return False
+            result = False
+
+        if self.pid_file_path != None:
+            self.msg.append('locating pid from file %s' % self.pid_file_path)
+            if os.path.exists(str(self.pid_file_path)):
+                try:
+                    pid_file = open(str(self.pid_file_path), 'r')
+                    pid = int(pid_file.read())
+                    pid_file.close()
+                    self.msg.append('checking process %s ...' % str(pid))
+                    os.getpgid(pid)
+                except OSError:
+                    self.msg.append('process not found')
+                    result = result | False
+                else:
+                    self.msg.append('process still running')
+                    result = result | True
+
+        self.msg.append('returning process state of %s' % str(result))
+        return result
 
     # --------------------------------------------------------------------------------
     # Wait for the AEM instance to be fully started. Do this by getting the URI 
@@ -133,6 +160,7 @@ class AEMService(object):
     # and try again.
     # --------------------------------------------------------------------------------
     def wait_for_active_instance(self):
+        self.msg.append('## wait_for_active_instance ##')
         start_time = time.time()
         while True:
             url = 'http://%s:%s%s' % (self.host, self.port, self.uri)
@@ -142,6 +170,9 @@ class AEMService(object):
                 if self.verbose:
                     self.msg.append('instance is active')
                 break
+            else:
+                if self.verbose:
+                    self.msg.append('instance not yet active')
             if time.time() - start_time > self.timeout:
                 self.module.fail_json(msg='Timed out waiting for instance to become active')
             time.sleep(10)
@@ -177,6 +208,7 @@ class AEMService(object):
     # Start AEM
     # --------------------------------------------------------------------------------
     def start_aem(self):
+        self.msg.append('## start_aem ##')
         if self.cmd == None:
             self.cmd = "service adobecq start"
         (rc, out, err) = self.module.run_command(self.cmd)
@@ -197,6 +229,7 @@ class AEMService(object):
     # Stop AEM
     # --------------------------------------------------------------------------------
     def stop_aem(self):
+        self.msg.append('## stop_aem ##')
         if self.cmd == None:
             self.cmd = "service adobecq stop"
         (rc, out, err) = self.module.run_command(self.cmd)
@@ -211,6 +244,7 @@ class AEMService(object):
                 self.module.fail_json(msg='Timed out waiting for instance to stop')
             time.sleep(10)
             continue
+        self.msg.append('## aem service stopped ##')
         # Give instance a chance to fully stop after TCP port is closed.
         time.sleep(10)
             
@@ -259,6 +293,7 @@ def main():
             admin_password = dict(required=False, no_log=True),
             timeout        = dict(default=600),
             authenticate   = dict(default=False, type='bool'),
+            pid_file_path  = dict(default=None),
             ),
         supports_check_mode=True
         )
